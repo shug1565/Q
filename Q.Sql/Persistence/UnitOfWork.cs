@@ -6,5 +6,6 @@ namespace Q.Sql.Persistence {
     private readonly T context;
     public UnitOfWork(T context) => this.context = context;
     public async Task CompleteAsync() => await context.SaveChangesAsync();
+    public void SetAutoDetectChangesEnabled(bool enable) => context.ChangeTracker.AutoDetectChangesEnabled = enable;
   }
 }
