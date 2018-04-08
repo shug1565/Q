@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Q.Lib", "Q.Lib\Q.Lib.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Q.Sql", "Q.Sql\Q.Sql.csproj", "{F5FB795E-D19B-4820-8454-3A899AE8F942}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Q.Mongo", "Q.Mongo\Q.Mongo.csproj", "{2066A5D6-C869-49CB-8F32-BECA2BA1B3F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F5FB795E-D19B-4820-8454-3A899AE8F942}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5FB795E-D19B-4820-8454-3A899AE8F942}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5FB795E-D19B-4820-8454-3A899AE8F942}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2066A5D6-C869-49CB-8F32-BECA2BA1B3F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2066A5D6-C869-49CB-8F32-BECA2BA1B3F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2066A5D6-C869-49CB-8F32-BECA2BA1B3F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2066A5D6-C869-49CB-8F32-BECA2BA1B3F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
