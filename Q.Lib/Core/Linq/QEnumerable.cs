@@ -75,6 +75,11 @@ namespace Q.Lib.Core.Linq {
     #region Array
     public static List<T> ToList<T>(this IList<T> a) => a.ToList();
     #endregion
+    public static IEnumerable<List<T>> Partition<T>(this IList<T> source, Int32 size)
+    {
+      for (int i = 0; i < Math.Ceiling(source.Count / (Double)size); i++)
+        yield return new List<T>(source.Skip(size * i).Take(size));
+    }
     public static(T min, T max) MinMax<T>(this IEnumerable<T> data) where T : IComparable<T> {
       T first = data.First();
       var ret = (min: first, max: first);
