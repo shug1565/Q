@@ -4,13 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Q.Lib.Core.Concurrency;
 
-namespace Q.Lib.Core.Linq {
-  public static class QEnumerable {
+namespace Q.Lib.Core.Linq
+{
+  public static class QEnumerable
+  {
     #region Misc
     public static bool NotNullOrEmpty<T>(this IEnumerable<T> x) => x != null && x.Count() > 0;
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> x) => x.Where(e => e != null);
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> x) where T : struct => x.Where(e => e != null).Select(e => e.Value);
     #endregion
     #region ToType
-    public static IDictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> data) => data.ToDictionary(x => x.Key, x => x.Value);
+    public static IDictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> data, bool forceUpdate)
+    {
+      if (!forceUpdate) data.ToDictionary(x => x.Key, x => x.Value);
+      var ret = new Dictionary<TKey, TValue>();
+      data.ForEach(x => ret[x.Key] = x.Value);
+      return ret;
+    }
     #endregion
     #region DistinctBy
     /// <summary>
@@ -30,7 +40,8 @@ namespace Q.Lib.Core.Linq {
     /// comparing them by the specified key projection.</returns>
 
     public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
-      Func<TSource, TKey> keySelector) {
+      Func<TSource, TKey> keySelector)
+    {
       return source.DistinctBy(keySelector, null);
     }
 
@@ -53,37 +64,48 @@ namespace Q.Lib.Core.Linq {
     /// comparing them by the specified key projection.</returns>
 
     public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
-      Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer) {
+      Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+    {
       if (source == null) throw new ArgumentNullException("source");
       if (keySelector == null) throw new ArgumentNullException("keySelector");
       return DistinctByImpl(source, keySelector, comparer);
     }
 
     private static IEnumerable<TSource> DistinctByImpl<TSource, TKey>(IEnumerable<TSource> source,
-      Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer) {
+      Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+    {
       var knownKeys = new HashSet<TKey>(comparer);
-      foreach (var element in source) {
-        if (knownKeys.Add(keySelector(element))) {
+      foreach (var element in source)
+      {
+        if (knownKeys.Add(keySelector(element)))
+        {
           yield return element;
         }
       }
     }
     #endregion
 
-    
-
     #region Array
     public static List<T> ToList<T>(this IList<T> a) => a.ToList();
+    public static T[,] To2dArray<T>(this IEnumerable<IEnumerable<T>> a)
+    {
+      T[,] ret = new T[a.Count(), a.Max(x => x.Count())];
+      a.ForEach((x, i) => x.ForEach((y, j) => ret[i, j] = y));
+      return ret;
+    }
     #endregion
+
     public static IEnumerable<List<T>> Partition<T>(this IList<T> source, Int32 size)
     {
       for (int i = 0; i < Math.Ceiling(source.Count / (Double)size); i++)
         yield return new List<T>(source.Skip(size * i).Take(size));
     }
-    public static(T min, T max) MinMax<T>(this IEnumerable<T> data) where T : IComparable<T> {
+    public static (T min, T max) MinMax<T>(this IEnumerable<T> data) where T : IComparable<T>
+    {
       T first = data.First();
       var ret = (min: first, max: first);
-      data.Skip(1).ForEach(x => {
+      data.Skip(1).ForEach(x =>
+      {
         if (x.CompareTo(ret.min) < 0)
           ret.min = x;
         else if (x.CompareTo(ret.max) > 0)
@@ -91,37 +113,53 @@ namespace Q.Lib.Core.Linq {
       });
       return ret;
     }
-    public static T2 F<T, T2>(this IList<T> source, Func<IList<T>, T2> f) {
+    public static T[,] InitArr<T>(this (int r, int c) dim, T val)
+    {
+      T[,] ret = new T[dim.r, dim.c];
+      for (int i = 0; i < dim.r; i++)
+        for (int j = 0; j < dim.c; j++)
+          ret[i, j] = val;
+      return ret;
+    }
+    public static T2 F<T, T2>(this IList<T> source, Func<IList<T>, T2> f)
+    {
       return f(source);
     }
-    public static List<T2> F<T, T2>(this IList<T> source, Func<T, T2> f) {
+    public static List<T2> F<T, T2>(this IList<T> source, Func<T, T2> f)
+    {
       List<T2> ret = new List<T2>(source.Count);
-      for (int i = 0; i < source.Count; i++) {
+      for (int i = 0; i < source.Count; i++)
+      {
         ret.Add(f(source[i]));
       }
       return ret;
     }
-    public static int Diff(this IList<int> a) {
+    public static int Diff(this IList<int> a)
+    {
       if (a.Count != 2)
         throw new InvalidOperationException("length");
       return a[0] - a[1];
     }
-    public static int Prod(this IList<int> a) {
+    public static int Prod(this IList<int> a)
+    {
       int ret = 1;
       a.ForEach(x => { ret *= x; });
       return ret;
     }
-    public static int Div(this IList<int> a) {
+    public static int Div(this IList<int> a)
+    {
       if (a.Count != 2)
         throw new InvalidOperationException("length");
       return a[0] / a[1];
     }
-    public static T[] SubArray<T>(this T[] data, int index, int length) {
+    public static T[] SubArray<T>(this T[] data, int index, int length)
+    {
       T[] result = new T[length];
       Array.Copy(data, index, result, 0, length);
       return result;
     }
-    public static string Concat(this IEnumerable<string> a, string delimiter = " ") {
+    public static string Concat(this IEnumerable<string> a, string delimiter = " ")
+    {
       var ret = a.Aggregate((i, j) => i + delimiter + j);
       return ret;
     }

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Q.Lib\Q.Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ManagedXLL">
+      <HintPath>..\..\..\CommonDependency\ManagedXLL_4.0.0.850-rc\v4.0.0.850-rc\ManagedXLL.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

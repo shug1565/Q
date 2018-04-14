@@ -1,22 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Q.Lib.Core.Concurrency;
-using Q.Lib.Core.Linq;
 
 namespace Q.Lib.Core.Data {
-  public abstract class QConcurrentIDictionary<TKey, TValue> : QReadWriteLocker, IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>> {
-    protected IDictionary<TKey, TValue> dict;
+  public class QConcurrentIDictionary<TKey, TValue> : QReadWriteLocker, IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>> {
+    protected virtual IDictionary<TKey, TValue> dict { get; set; }
 
     public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items) => WriteLockAction(x => items.ForEach(y => x.Add(y.Key, y.Value)));
     public void RemoveRange(IEnumerable<KeyValuePair<TKey, TValue>> items) => WriteLockAction(x => items.ForEach(y => x.Remove(y)));
     public void RemoveRange(IEnumerable<TKey> keys) => WriteLockAction(x => keys.ForEach(y => x.Remove(y)));
+    public void ForEach(Action<KeyValuePair<TKey, TValue>> g) => ReadLockAction(x => x.ForEach(y => g(y)));
+    public IEnumerable<KeyValuePair<TKey, TValue>> Where(Func<KeyValuePair<TKey, TValue>, bool> p) => ReadLockFunc(x => x.Where(p));
+    public IEnumerable<T> Select<T>(Func<KeyValuePair<TKey, TValue>, T> f) => ReadLockFunc(x => x.Select(f));
 
     #region LockHelpers
-    public T ReadLockFunc<T>(Func<IDictionary<TKey, TValue>, T> f) => ReadLockFunc(() => f(dict));
-    public void ReadLockAction(Action<IDictionary<TKey, TValue>> f) => ReadLockAction(() => f(dict));
-    public T WriteLockFunc<T>(Func<IDictionary<TKey, TValue>, T> f) => WriteLockFunc(() => f(dict));
-    public void WriteLockAction(Action<IDictionary<TKey, TValue>> f) => WriteLockAction(() => f(dict));
+    public virtual T ReadLockFunc<T>(Func<IDictionary<TKey, TValue>, T> f) => ReadLockFunc(() => f(dict));
+    public virtual void ReadLockAction(Action<IDictionary<TKey, TValue>> f) => ReadLockAction(() => f(dict));
+    public virtual T WriteLockFunc<T>(Func<IDictionary<TKey, TValue>, T> f) => WriteLockFunc(() => f(dict));
+    public virtual void WriteLockAction(Action<IDictionary<TKey, TValue>> f) => WriteLockAction(() => f(dict));
     #endregion
 
     #region Interface implementation

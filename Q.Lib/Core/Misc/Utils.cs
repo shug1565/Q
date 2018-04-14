@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Q.Lib.Core.Misc {
   public static class Utils {
@@ -15,8 +16,32 @@ namespace Q.Lib.Core.Misc {
         }
         return null;
     }
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T> a) => a == null || a.Count() == 0;
+    public static bool NotNullAnd<T>(this T a, Func<T, bool> f) => a != null && f(a);
+    // Need a Nullable version?
+    public static T2 NotNullThen<T, T2>(this T a, Func<T, T2> f) where T2: class => a == null ? null : f(a);
+   
     #region KeyValuePair utils
     public static KeyValuePair<TKey, TValue> ToKVP<TKey,TValue>(this (TKey key, TValue value) t) => new KeyValuePair<TKey, TValue>(t.key, t.value);
+    public static IEnumerable<KeyValuePair<TKey, TValue>> WhereValueNotNull<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> a) => a.Where(x => x.Value != null);
     #endregion
+
+    #region Tuple utils
+    public static bool RngContains<T>(this (T st, T ed) rng, T a, EdgeMode em) where T: IComparable<T>
+    {
+      if (em == EdgeMode.Inc) return a.CompareTo(rng.st) >= 0 && a.CompareTo(rng.ed) <= 0;
+      if (em == EdgeMode.Exc) return a.CompareTo(rng.st) > 0 && a.CompareTo(rng.ed) < 0;
+      if (em == EdgeMode.LExcRInc) return a.CompareTo(rng.st) > 0 && a.CompareTo(rng.ed) <= 0;
+      if (em == EdgeMode.LIncRExc) return a.CompareTo(rng.st) >= 0 && a.CompareTo(rng.ed) < 0;
+      throw new InvalidOperationException("EdgeMode unrecognised.");
+    }
+    #endregion
+  }
+  public enum EdgeMode
+  {
+    Inc,
+    Exc,
+    LIncRExc,
+    LExcRInc
   }
 }
