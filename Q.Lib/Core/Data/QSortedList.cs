@@ -18,6 +18,6 @@ namespace Q.Lib.Core.Data
     public QSortedList(IDictionary<TKey, TValue> data) => WriteLockAction(() => dict = new SortedList<TKey, TValue>(data));
     public QSortedList(IEnumerable<KeyValuePair<TKey, TValue>> data, bool forceUpdate) => WriteLockAction(() => dict = new SortedList<TKey, TValue>(data.ToDictionary(forceUpdate)));
 
-    public IEnumerable<KeyValuePair<TKey, TValue>> GetRows((TKey st, TKey ed) rng) => Where(y => rng.RngContains(y.Key, EdgeMode.Inc));
+    public IEnumerable<KeyValuePair<TKey, TValue>> GetRows((TKey st, TKey ed)? rng) => rng == null ? dict : Where(y => rng.Value.RngContains(y.Key, EdgeMode.Inc));
   }
 }

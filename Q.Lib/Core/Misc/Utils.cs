@@ -5,6 +5,7 @@ using System.Linq;
 namespace Q.Lib.Core.Misc {
   public static class Utils {
     public static double ToDbl(this decimal x) => Convert.ToDouble(x);
+    public static List<T> SingleToList<T>(this T a) => new List<T> { a };
     public static T? ParseEnum<T>(this string value) where T : struct, IConvertible
     {
         if (!typeof(T).IsEnum) throw new ArgumentException("T must be an enumerated type");
@@ -35,6 +36,8 @@ namespace Q.Lib.Core.Misc {
       if (em == EdgeMode.LIncRExc) return a.CompareTo(rng.st) >= 0 && a.CompareTo(rng.ed) < 0;
       throw new InvalidOperationException("EdgeMode unrecognised.");
     }
+    public static (T, T)? ToPair<T>(this T[] a) => a == null ? ((T, T)?)null : (a[0], a[1]);
+    public static (T, T, T)? ToTriple<T>(this T[] a) => a == null ? ((T, T, T)?)null : (a[0], a[1], a[2]);
     #endregion
   }
   public enum EdgeMode
