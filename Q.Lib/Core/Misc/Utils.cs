@@ -21,13 +21,15 @@ namespace Q.Lib.Core.Misc {
     public static bool NotNullAnd<T>(this T a, Func<T, bool> f) => a != null && f(a);
     // Need a Nullable version?
     public static T2 NotNullThen<T, T2>(this T a, Func<T, T2> f) where T2: class => a == null ? null : f(a);
-   
+
     #region KeyValuePair utils
+    public static IDictionary<TKey, TValue> ToIDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> a) => a.ToDictionary(x => x.Key, x => x.Value);
     public static KeyValuePair<TKey, TValue> ToKVP<TKey,TValue>(this (TKey key, TValue value) t) => new KeyValuePair<TKey, TValue>(t.key, t.value);
     public static IEnumerable<KeyValuePair<TKey, TValue>> WhereValueNotNull<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> a) => a.Where(x => x.Value != null);
     #endregion
 
     #region Tuple utils
+    public static IDictionary<TKey, TValue> ToIDictionary<TKey, TValue>(this IEnumerable<(TKey k, TValue v)> a) => a.ToDictionary(x => x.k, x => x.v);
     public static bool RngContains<T>(this (T st, T ed) rng, T a, EdgeMode em) where T: IComparable<T>
     {
       if (em == EdgeMode.Inc) return a.CompareTo(rng.st) >= 0 && a.CompareTo(rng.ed) <= 0;
