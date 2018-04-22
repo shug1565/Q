@@ -14,8 +14,10 @@ namespace Q.Lib.Core.Data {
     public void ForEach(Action<KeyValuePair<TKey, TValue>> g) => ReadLockAction(x => x.ForEach(y => g(y)));
     public IEnumerable<KeyValuePair<TKey, TValue>> Where(Func<KeyValuePair<TKey, TValue>, bool> p) => ReadLockFunc(x => x.Where(p));
     public IEnumerable<T> Select<T>(Func<KeyValuePair<TKey, TValue>, T> f) => ReadLockFunc(x => x.Select(f));
+    public IEnumerable<IGrouping<T, KeyValuePair<TKey, TValue>>> GroupBy<T>(Func<KeyValuePair<TKey, TValue>, T> f) => ReadLockFunc(x => x.GroupBy(f));
     public KeyValuePair<TKey, TValue> Aggregate(Func<KeyValuePair<TKey, TValue>, KeyValuePair<TKey, TValue>, KeyValuePair<TKey, TValue>> f) => ReadLockFunc(x => x.Aggregate(f));
     public T Aggregate<T>(T seed, Func<T, KeyValuePair<TKey, TValue>, T> f) => ReadLockFunc(x => x.Aggregate(seed, f));
+    public KeyValuePair<TKey, TValue> ElementAt(int i) => ReadLockFunc(x => i >= 0 ? x.ElementAt(i) : x.ElementAt(x.Count() + i));
 
     #region LockHelpers
     public virtual T ReadLockFunc<T>(Func<IDictionary<TKey, TValue>, T> f) => ReadLockFunc(() => f(dict));
