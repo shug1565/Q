@@ -16,10 +16,10 @@ namespace Q.Lib.Core.Concurrency
     /// <typeparam name="T">The type of the elements in the sequence</typeparam>
     /// <param name="source">The sequence of elements</param>
     /// <param name="action">The action to execute on each element</param>
-    public static void ForEach<T>(this IEnumerable<T> source, Action<T> act, Func<T, bool> breakPredicate = null)
-      => source.ForEach((x, i) => act(x), breakPredicate.NotNullThen<Func<T, bool>, Func<T, int, bool>>(f => (x, i) => f(x)));
+    public static void ForEach<T>(this IEnumerable<T> source, Action<T> act, Func<T, bool> breakPredicate = null, Func<T, bool> continueClause = null)
+      => source.ForEach((x, i) => act(x), breakPredicate.NotNullThen<Func<T, bool>, Func<T, int, bool>>(f => (x, i) => f(x)), continueClause.NotNullThen<Func<T, bool>, Func<T, int, bool>>(f => (x, i) => f(x)));
 
-    public static void ForEach<T>(this IEnumerable<T> source, Action<T, int> act, Func<T, int, bool> breakPredicate = null)
+    public static void ForEach<T>(this IEnumerable<T> source, Action<T, int> act, Func<T, int, bool> breakPredicate = null, Func<T, int, bool> continueClause = null)
     {
       if (source == null) throw new ArgumentNullException("source");
       if (act == null) throw new ArgumentNullException("act");
@@ -28,6 +28,7 @@ namespace Q.Lib.Core.Concurrency
       foreach (var element in source)
       {
         if (breakPredicate.NotNullAnd(f => f(element, i))) break;
+        if (continueClause.NotNullAnd(f => f(element, i))) continue;
         act(element, i++);
       }
     }

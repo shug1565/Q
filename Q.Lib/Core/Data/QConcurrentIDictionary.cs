@@ -12,6 +12,10 @@ namespace Q.Lib.Core.Data {
     public void RemoveRange(IEnumerable<KeyValuePair<TKey, TValue>> items) => WriteLockAction(x => items.ForEach(y => x.Remove(y)));
     public void RemoveRange(IEnumerable<TKey> keys) => WriteLockAction(x => keys.ForEach(y => x.Remove(y)));
     public void ForEach(Action<KeyValuePair<TKey, TValue>> g) => ReadLockAction(x => x.ForEach(y => g(y)));
+    public void ForEach(Action<KeyValuePair<TKey, TValue>, int> act, Func<KeyValuePair<TKey, TValue>, int, bool> breakPredicate = null, Func<KeyValuePair<TKey, TValue>, int, bool> continueClause = null)
+      => ReadLockAction(x => x.ForEach(act, breakPredicate, continueClause));
+    public void ForEach(Action<KeyValuePair<TKey, TValue>> act, Func<KeyValuePair<TKey, TValue>, bool> breakPredicate = null, Func<KeyValuePair<TKey, TValue>, bool> continueClause = null)
+      => ReadLockAction(x => x.ForEach(act, breakPredicate, continueClause));
     public IEnumerable<KeyValuePair<TKey, TValue>> Where(Func<KeyValuePair<TKey, TValue>, bool> p) => ReadLockFunc(x => x.Where(p));
     public IEnumerable<T> Select<T>(Func<KeyValuePair<TKey, TValue>, T> f) => ReadLockFunc(x => x.Select(f));
     public IEnumerable<IGrouping<T, KeyValuePair<TKey, TValue>>> GroupBy<T>(Func<KeyValuePair<TKey, TValue>, T> f) => ReadLockFunc(x => x.GroupBy(f));
