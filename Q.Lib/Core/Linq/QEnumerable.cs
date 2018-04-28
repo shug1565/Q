@@ -93,8 +93,42 @@ namespace Q.Lib.Core.Linq
       a.ForEach((x, i) => x.ForEach((y, j) => ret[i, j] = y));
       return ret;
     }
+    public static T[,] Transpose<T>(this T[,] a)
+    {
+      int n = a.GetLength(0);
+      int m = a.GetLength(1);
+      T[,] ret = new T[m, n];
+      for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+          ret[j, i] = a[i, j];
+      return ret;
+    }
     #endregion
 
+    public static Int32 BinarySearch<T>(this IList<T> list, T value, IComparer<T> comparer = null)
+    {
+      if (list == null)
+        throw new ArgumentNullException(nameof(list));
+
+      comparer = comparer ?? Comparer<T>.Default;
+
+      Int32 lower = 0;
+      Int32 upper = list.Count - 1;
+
+      while (lower <= upper)
+      {
+        Int32 middle = lower + (upper - lower) / 2;
+        Int32 comparisonResult = comparer.Compare(value, list[middle]);
+        if (comparisonResult == 0)
+          return middle;
+        else if (comparisonResult < 0)
+          upper = middle - 1;
+        else
+          lower = middle + 1;
+      }
+
+      return ~lower;
+    }
     public static IEnumerable<List<T>> Partition<T>(this IList<T> source, Int32 size)
     {
       for (int i = 0; i < Math.Ceiling(source.Count / (Double)size); i++)
