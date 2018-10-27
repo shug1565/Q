@@ -4,6 +4,7 @@ using System.Text;
 using ManagedXLL;
 using System.IO;
 using System.Linq;
+using Q.Lib.Core.Misc;
 
 namespace Q.XLS
 {
@@ -24,5 +25,7 @@ namespace Q.XLS
       var ret = folders.Select(x => x.ToXlOper()).ToArray();
       return ret;
     }
+    [WorksheetFunction("QFromPosixMilliSec")]
+    public static DateTime FromPosixMilliSec(long ms) => ms.FromPosix();
   }
 }
