@@ -13,15 +13,17 @@ namespace Q.Lib.Core.Linq
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> x) => x.Where(e => e != null);
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> x) where T : struct => x.Where(e => e != null).Select(e => e.Value);
     #endregion
+
     #region ToType
     public static IDictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> data, bool forceUpdate)
     {
-      if (!forceUpdate) data.ToDictionary(x => x.Key, x => x.Value);
+      if (!forceUpdate) return data.ToDictionary(x => x.Key, x => x.Value);
       var ret = new Dictionary<TKey, TValue>();
       data.ForEach(x => ret[x.Key] = x.Value);
       return ret;
     }
     #endregion
+
     #region DistinctBy
     /// <summary>
     /// Returns all distinct elements of the given source, where "distinctness"
@@ -86,7 +88,9 @@ namespace Q.Lib.Core.Linq
     #endregion
 
     #region Array
-    public static List<T> ToList<T>(this IList<T> a) => a.ToList();
+    //public static List<T> ToList<T>(this IEnumerable<T> a) => a.ToList();
+    public static List<T> ToList<T>(this T a) => new List<T> { a };
+
     public static T[,] To2dArray<T>(this IEnumerable<IEnumerable<T>> a)
     {
       T[,] ret = new T[a.Count(), a.Max(x => x.Count())];
