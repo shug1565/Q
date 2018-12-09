@@ -4,8 +4,7 @@ using System.Linq;
 
 namespace Q.Lib.Core.Misc {
   public static class Utils {
-    public static double ToDbl(this decimal x) => Convert.ToDouble(x);
-    public static List<T> SingleToList<T>(this T a) => new List<T> { a };
+    #region enum
     public static T? ParseEnum<T>(this string value) where T : struct, IConvertible
     {
         if (!typeof(T).IsEnum) throw new ArgumentException("T must be an enumerated type");
@@ -17,10 +16,21 @@ namespace Q.Lib.Core.Misc {
         }
         return null;
     }
+    #endregion
+
+    #region null/nan/empty
     public static bool IsNullOrEmpty<T>(this IEnumerable<T> a) => a == null || a.Count() == 0;
     public static bool NotNullAnd<T>(this T a, Func<T, bool> f) => a != null && f(a);
     // Need a Nullable version?
     public static T2 NotNullThen<T, T2>(this T a, Func<T, T2> f) where T2: class => a == null ? null : f(a);
+    #endregion
+
+    #region type conversion
+    public static double ToDbl(this decimal x) => Convert.ToDouble(x);
+    public static List<T> ToSingleItemList<T>(this T a) => new List<T> { a };
+    public static HashSet<T> ToHashSet<T>(this T a) => new HashSet<T>() { a };
+    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> a) => new HashSet<T>(a);
+    #endregion
 
     #region KeyValuePair utils
     public static IDictionary<TKey, TValue> ToIDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> a) => a.ToDictionary(x => x.Key, x => x.Value);

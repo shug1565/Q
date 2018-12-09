@@ -88,9 +88,18 @@ namespace Q.Lib.Core.Linq
     #endregion
 
     #region Array
-    //public static List<T> ToList<T>(this IEnumerable<T> a) => a.ToList();
-    public static List<T> ToList<T>(this T a) => new List<T> { a };
-
+    public static T[,] To2dArray<T>(this IEnumerable<(T, T)> a)
+    {
+      T[,] ret = new T[a.Count(), 2];
+      a.ForEach((x, i) => { ret[i, 0] = x.Item1; ret[i, 1] = x.Item2; });
+      return ret;
+    }
+    public static T[,] To2dArray<T>(this IEnumerable<(T, T, T)> a)
+    {
+      T[,] ret = new T[a.Count(), 3];
+      a.ForEach((x, i) => { ret[i, 0] = x.Item1; ret[i, 1] = x.Item2; ret[i, 2] = x.Item3; });
+      return ret;
+    }
     public static T[,] To2dArray<T>(this IEnumerable<IEnumerable<T>> a)
     {
       T[,] ret = new T[a.Count(), a.Max(x => x.Count())];
