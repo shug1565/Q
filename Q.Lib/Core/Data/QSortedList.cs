@@ -16,9 +16,9 @@ namespace Q.Lib.Core.Data
     #endregion
     public QSortedList() => WriteLockAction(() => dict = new SortedList<TKey, TValue>());
     public QSortedList(IDictionary<TKey, TValue> data) => WriteLockAction(() => dict = new SortedList<TKey, TValue>(data));
-    public QSortedList(IEnumerable<KeyValuePair<TKey, TValue>> data, bool forceUpdate) => WriteLockAction(() => dict = new SortedList<TKey, TValue>(data.ToDictionary(forceUpdate)));
+    public QSortedList(IEnumerable<KeyValuePair<TKey, TValue>> data, bool forceUpdate = false) => WriteLockAction(() => dict = new SortedList<TKey, TValue>(data.ToDictionary(forceUpdate)));
 
-    public IEnumerable<KeyValuePair<TKey, TValue>> GetRows((TKey st, TKey ed)? rng) => rng == null ? dict : Where(y => rng.Value.RngContains(y.Key, EdgeMode.Inc));
+    public IEnumerable<KeyValuePair<TKey, TValue>> GetRows((TKey st, TKey ed)? rng) => rng == null ? dict : Where(y => rng.Value.RngContain(y.Key, EdgeMode.Inc));
     public void ForEach((TKey st, TKey ed)? rng, Action<KeyValuePair<TKey, TValue>> act, Func<KeyValuePair<TKey, TValue>, bool> breakPredicate = null, Func<KeyValuePair<TKey, TValue>, bool> continueClause = null)
       => ForEach(rng, (x, i) => act(x), breakPredicate.NotNullThen<Func<KeyValuePair<TKey, TValue>, bool>, Func<KeyValuePair<TKey, TValue>, int, bool>>(f => (x, i) => f(x)), 
         continueClause.NotNullThen<Func<KeyValuePair<TKey, TValue>, bool>, Func<KeyValuePair<TKey, TValue>, int, bool>>(f => (x, i) => f(x)));

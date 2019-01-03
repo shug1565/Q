@@ -32,29 +32,37 @@ namespace Q.XLS
     }
     [WorksheetFunction("QFromPosixMilliSec")]
     public static DateTime FromPosixMilliSec(long ms) => ms.FromPosix();
-    [WorksheetFunction("Q", MacroClass.AsyncWait)]
-    public static Array Expand(Array a)
+    [WorksheetFunction("Q")]
+    public static Array Expand(Array a, int rowOffset = 0, int colOffset = 1, string refTxt = null)
     {
       ExcelThread xlt = ExcelThread.Current;
-      var app = Excel.Application;
-      //app.GetType().InvokeMember("Run", BindingFlags.InvokeMethod, null, app, new object[] { "QQ" });
-      object workbook = app.GetType().InvokeMember("ActiveWorkbook", BindingFlags.GetProperty, null, app, null);
+      XlOper o = refTxt == null || refTxt == "" ? xlt.GetCaller() : xlt.Call(Excel.Functions.Indirect, refTxt);
+      var des = xlt.Call(Excel.Functions.Offset, o, rowOffset, colOffset, a.GetLength(0), a.GetLength(1));
+      Excel.AsyncRangeUpdate(xlt.RefText(des, false), a);
+      return a;
+      //var app = Excel.Application;
+      //app.GetType().InvokeMember("Run", BindingFlags.InvokeMethod, null, app, new object[] { "QDefineRangeName", "hh" });
+      //object workbook = app.GetType().InvokeMember("ActiveWorkbook", BindingFlags.GetProperty, null, app, null);
       //object properties = app.GetType().InvokeMember("BuiltinDocumentProperties", BindingFlags.GetProperty, null, workbook.GetType(), null);
       //object property = app.GetType().InvokeMember("Item", BindingFlags.GetProperty, null, properties, new object[] { "Author" });
       //object value = app.GetType().InvokeMember("Value", BindingFlags.GetProperty, null, property, null);
-      //xlt.CallPrivileged(Excel.Commands.DefineName, "hehe2", "$A$2");
-      Excel.CallUDF("QQ");
-      XlOper caller = xlt.GetCaller();
-      var des = xlt.Call(Excel.Functions.Offset, caller, 1, 0, a.GetLength(0), a.GetLength(1));
-      Excel.AsyncRangeUpdate(xlt.RefText(des, false), a);
-      return a;
+      //xlt.CallPrivileged(Excel.Commands.DefineName, "hehe", "$A$2");
+      //xlt.CallUDF("QDefineRangeName", "hh");
     }
-    [ExcelCommand("QQ")]
-    public static void Macro()
+    [WorksheetFunction("QAddress", MacroClass.CommandEquivalent)]
+    public static string Address([ExcelReference] XlOper o)
     {
       ExcelThread xlt = ExcelThread.Current;
-      xlt.Call(Excel.Commands.DefineName, "hehe", "$A$1");
-      xlt.Set(new ExcelRangeCollection(20, 20), 10);
+      var ret = xlt.Call(Excel.Functions.GetCell, 1, o);
+      return ret.AsString();
     }
+    //[ExcelCommand("QDefineRangeName", DetectUserAbort = true)]
+    //public static void DefineRangeName(string name)
+    //{
+    //  ExcelThread xlt = ExcelThread.Current;
+    //  XlOper rng = new XlOper(new ExcelRangeCollection(10, 10));
+    //  xlt.Call(Excel.Commands.DefineName, name, rng);
+    //  //xlt.Set(new ExcelRangeCollection(20, 20, 20, 20), 10);
+    //}
   }
 }

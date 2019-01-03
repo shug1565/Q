@@ -12,6 +12,37 @@ namespace Q.Lib.Core.Linq
     public static bool NotNullOrEmpty<T>(this IEnumerable<T> x) => x != null && x.Count() > 0;
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> x) => x.Where(e => e != null);
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> x) where T : struct => x.Where(e => e != null).Select(e => e.Value);
+    public static int IndexOf<TItem>(this IEnumerable<TItem> items, Func<TItem, bool> predicate)
+    {
+      var index = 0;
+      foreach (var item in items)
+      {
+        if (predicate(item)) return index;
+        index++;
+      }
+      return -1;
+    }
+    public static IEnumerable<R> AggregateSequence<A, R>(this IEnumerable<A> items, R seed, Func<R, A, R> aggregator) => items.AggregateSequence(seed, aggregator, x => x);
+    public static IEnumerable<T> AggregateSequence<A, R, T>(this IEnumerable<A> items, R seed, Func<R, A, R> aggregator, Func<R, T> resultSelector)
+    {
+      // Error cases go here.
+      R t = seed;
+      foreach (A item in items)
+      {
+        t = aggregator(t, item);
+        yield return resultSelector(t);
+      }
+    }
+    public static List<T> SelectUpdates<T>(this IEnumerable<T> rows, T seed, Func<T, T, bool> equals = null)
+    {
+      if (equals == null) equals = (x, y) => x.Equals(y);
+      var ret = rows.Aggregate((new List<T>(), seed), (x, y) =>
+      {
+        if (!equals(y, x.Item2)) x.Item1.Add(y);
+        return (x.Item1, y);
+      }, x => x.Item1);
+      return ret.Count == 0 ? null : ret;
+    }
     #endregion
 
     #region ToType
@@ -118,20 +149,20 @@ namespace Q.Lib.Core.Linq
     }
     #endregion
 
-    public static Int32 BinarySearch<T>(this IList<T> list, T value, IComparer<T> comparer = null)
+    public static int BinarySearch<T>(this IList<T> list, T value, IComparer<T> comparer = null)
     {
       if (list == null)
         throw new ArgumentNullException(nameof(list));
 
       comparer = comparer ?? Comparer<T>.Default;
 
-      Int32 lower = 0;
-      Int32 upper = list.Count - 1;
+      int lower = 0;
+      int upper = list.Count - 1;
 
       while (lower <= upper)
       {
-        Int32 middle = lower + (upper - lower) / 2;
-        Int32 comparisonResult = comparer.Compare(value, list[middle]);
+        int middle = lower + (upper - lower) / 2;
+        int comparisonResult = comparer.Compare(value, list[middle]);
         if (comparisonResult == 0)
           return middle;
         else if (comparisonResult < 0)
@@ -142,9 +173,9 @@ namespace Q.Lib.Core.Linq
 
       return ~lower;
     }
-    public static IEnumerable<List<T>> Partition<T>(this IList<T> source, Int32 size)
+    public static IEnumerable<List<T>> Partition<T>(this IList<T> source, int size)
     {
-      for (int i = 0; i < Math.Ceiling(source.Count / (Double)size); i++)
+      for (int i = 0; i < Math.Ceiling(source.Count / (double)size); i++)
         yield return new List<T>(source.Skip(size * i).Take(size));
     }
     public static (T min, T max) MinMax<T>(this IEnumerable<T> data) where T : IComparable<T>

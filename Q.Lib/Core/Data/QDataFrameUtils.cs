@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Q.Lib.Core.Concurrency;
+using Q.Lib.Core.Linq;
 
-namespace Q.Lib.Core.Data {
+namespace Q.Lib.Core.Data
+{
   public static class QDataFrameUtils
   {
     public static QDataFrame<TRowKey, TColKey, TValue> ToQDataFrame<TRowKey, TColKey, TValue>(this IEnumerable<KeyValuePair<TRowKey, IDictionary<TColKey, TValue>>> rows, bool forceUpdate)
-      where TRowKey: IComparable<TRowKey> => new QDataFrame<TRowKey, TColKey, TValue>(rows, forceUpdate);
+      where TRowKey : IComparable<TRowKey>
+      => new QDataFrame<TRowKey, TColKey, TValue>(rows, forceUpdate);
     public static ISet<TColKey> GetColumnKeys<TRowKey, TColKey, TValue>(this IEnumerable<KeyValuePair<TRowKey, IDictionary<TColKey, TValue>>> rows)
     {
       var ret = new HashSet<TColKey>();
@@ -25,7 +29,8 @@ namespace Q.Lib.Core.Data {
     public static Dictionary<TKey, TValue> SubDict<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keys)
     {
       Dictionary<TKey, TValue> ret = new Dictionary<TKey, TValue>();
-      keys.ForEach(x => {
+      keys.ForEach(x =>
+      {
         if (dict.TryGetValue(x, out TValue val))
           ret.Add(x, val);
       });

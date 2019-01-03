@@ -29,7 +29,7 @@ namespace Q.Lib.Core.Misc {
     public static double ToDbl(this decimal x) => Convert.ToDouble(x);
     public static List<T> ToSingleItemList<T>(this T a) => new List<T> { a };
     public static HashSet<T> ToHashSet<T>(this T a) => new HashSet<T>() { a };
-    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> a) => new HashSet<T>(a);
+    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> a) => IsNullOrEmpty(a) ? null : new HashSet<T>(a);
     #endregion
 
     #region KeyValuePair utils
@@ -40,7 +40,7 @@ namespace Q.Lib.Core.Misc {
 
     #region Tuple utils
     public static IDictionary<TKey, TValue> ToIDictionary<TKey, TValue>(this IEnumerable<(TKey k, TValue v)> a) => a.ToDictionary(x => x.k, x => x.v);
-    public static bool RngContains<T>(this (T st, T ed) rng, T a, EdgeMode em) where T: IComparable<T>
+    public static bool RngContain<T>(this (T st, T ed) rng, T a, EdgeMode em = EdgeMode.Inc) where T: IComparable<T>
     {
       if (em == EdgeMode.Inc) return a.CompareTo(rng.st) >= 0 && a.CompareTo(rng.ed) <= 0;
       if (em == EdgeMode.Exc) return a.CompareTo(rng.st) > 0 && a.CompareTo(rng.ed) < 0;
@@ -48,8 +48,28 @@ namespace Q.Lib.Core.Misc {
       if (em == EdgeMode.LIncRExc) return a.CompareTo(rng.st) >= 0 && a.CompareTo(rng.ed) < 0;
       throw new InvalidOperationException("EdgeMode unrecognised.");
     }
+    public static bool Within<T>(this T a, (T st, T ed) rng, EdgeMode em = EdgeMode.Inc) where T : IComparable<T>
+      => a.Within(rng.st, rng.ed, em);
+    public static bool Within<T>(this T a, T st, T ed, EdgeMode em = EdgeMode.Inc) where T : IComparable<T>
+      => (st, ed).RngContain(a, em);
+    public static (T, T2) TrimLast<T, T2, T3>(this (T, T2, T3) a) => (a.Item1, a.Item2);
+    public static (T, T2, T3, T4) Extend<T, T2, T3, T4>(this (T, T2, T3) a, T4 b) => (a.Item1, a.Item2, a.Item3, b);
+    public static (T, T2, T3) Extend<T, T2, T3>(this (T, T2) a, T3 b) => (a.Item1, a.Item2, b);
     public static (T, T)? ToPair<T>(this T[] a) => a == null ? ((T, T)?)null : (a[0], a[1]);
     public static (T, T, T)? ToTriple<T>(this T[] a) => a == null ? ((T, T, T)?)null : (a[0], a[1], a[2]);
+    #endregion
+
+    #region Dict
+    public static bool DictCompare<TKey, TValue>(this IDictionary<TKey, TValue> dict, IDictionary<TKey, TValue> dict2, Func<TValue, TValue, bool> equals = null)
+    {
+      if (dict == null && dict2 == null) return true;
+      if (dict == null || dict2 == null) return false;
+      if (dict.Count != dict2.Count) return false; // Require equal count.
+      if (equals == null) equals = (x, y) => x.Equals(y);
+      foreach (var pair in dict)
+        if (!dict2.TryGetValue(pair.Key, out TValue value) || !equals(value, pair.Value)) return false;
+      return true;
+    }
     #endregion
   }
   public enum EdgeMode
