@@ -24,6 +24,10 @@ namespace Q.Lib.Core.Data
       else
         df[rowKey] = new Dictionary<TColKey, TValue>() { { colKey, value } };
     }
+    public static void AddColumn<TRowKey, TColKey, TValue>(this IDictionary<TRowKey, IDictionary<TColKey, TValue>> df, TColKey colKey, IEnumerable<KeyValuePair<TRowKey, TValue>> data)
+    {
+      data.ForEach(x => df.Assign(x.Key, colKey, x.Value));
+    }
     public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, TValue> col, TKey colKey, TValue defaultValue)
       => col.TryGetValue(colKey, out TValue ret) ? ret : defaultValue;
     public static Dictionary<TKey, TValue> SubDict<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keys)

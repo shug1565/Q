@@ -48,7 +48,8 @@ namespace Q.Lib.Core.Data
   }
   public static class QTimeSeriesUtils
   {
-    public static QTimeSeries<T> ToQTimeSeries<T>(this IEnumerable<KeyValuePair<DateTime, T>> a) => new QTimeSeries<T>(a);
+    public static QTimeSeries<T> ToQTimeSeries<T>(this IEnumerable<KeyValuePair<DateTime, T>> a, bool forceUpdate = false) => new QTimeSeries<T>(a, forceUpdate);
+    public static QTimeSeries<T> ToQTimeSeries<T>(this IEnumerable<(DateTime, T)> a, bool forceUpdate = false) => new QTimeSeries<T>(a.Select(x => x.ToKVP()), forceUpdate);
 
   }
   public enum FillMode

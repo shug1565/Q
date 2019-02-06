@@ -28,6 +28,42 @@ namespace Q.XLS
       a.ForEach((x, i) => { ret[i, 0] = x.Key.ToXlOper(); ret[i, 1] = x.Value.ToXlOper(); });
       return ret;
     }
+    public static XlOper[,] ToXlOper<T, T2>(this IEnumerable<(T, T2)> a)
+    {
+      if (a == null) return null;
+      int n = a.Count();
+      if (n == 0) return null;
+      XlOper[,] ret = new XlOper[n, 2];
+      a.ForEach((x, i) => { ret[i, 0] = x.Item1.ToXlOper(); ret[i, 1] = x.Item2.ToXlOper(); });
+      return ret;
+    }
+    public static XlOper[,] ToXlOper<T, T2, T3>(this IEnumerable<(T, T2, T3)> a)
+    {
+      if (a == null) return null;
+      int n = a.Count();
+      if (n == 0) return null;
+      XlOper[,] ret = new XlOper[n, 3];
+      a.ForEach((x, i) => { ret[i, 0] = x.Item1.ToXlOper(); ret[i, 1] = x.Item2.ToXlOper(); ret[i, 2] = x.Item3.ToXlOper(); });
+      return ret;
+    }
+    public static XlOper[,] ToXlOper<T, T2, T3, T4>(this IEnumerable<(T, T2, T3, T4)> a)
+    {
+      if (a == null) return null;
+      int n = a.Count();
+      if (n == 0) return null;
+      XlOper[,] ret = new XlOper[n, 4];
+      a.ForEach((x, i) => { ret[i, 0] = x.Item1.ToXlOper(); ret[i, 1] = x.Item2.ToXlOper(); ret[i, 2] = x.Item3.ToXlOper(); ret[i, 3] = x.Item4.ToXlOper(); });
+      return ret;
+    }
+    public static XlOper[,] ToXlOper<T, T2, T3, T4, T5>(this IEnumerable<(T, T2, T3, T4, T5)> a)
+    {
+      if (a == null) return null;
+      int n = a.Count();
+      if (n == 0) return null;
+      XlOper[,] ret = new XlOper[n, 5];
+      a.ForEach((x, i) => { ret[i, 0] = x.Item1.ToXlOper(); ret[i, 1] = x.Item2.ToXlOper(); ret[i, 2] = x.Item3.ToXlOper(); ret[i, 3] = x.Item4.ToXlOper(); ret[i, 4] = x.Item5.ToXlOper(); });
+      return ret;
+    }
     public static XlOper[,] ToXlOper<TKey, TCol, TValue>(this QDataFrame<TKey, TCol, TValue> df, Func<TCol, TValue, XlOper> f, bool noHeader = false) where TKey : IComparable<TKey>
       => df.ReadLockFunc(x => x.ToXlOper(x.GetColumnKeys(), f, noHeader, df.DefaultValue));
 

@@ -32,6 +32,7 @@ namespace Q.Lib.Core.Data {
     public bool ContainsKey(TColKey key) => ReadLockFunc(x => x.GetColumnKeys().Contains(key));
     public IEnumerable<KeyValuePair<TRowKey, IDictionary<TColKey, TValue>>> GetColumns(IEnumerable<TColKey> colKeys) => ReadLockFunc(x =>
       x.Select(y => (y.Key, y.Value.SubDict(colKeys) as IDictionary<TColKey, TValue>).ToKVP()).WhereValueNotNull());
+    public void AddColumn(TColKey colKey, IEnumerable<KeyValuePair<TRowKey, TValue>> col) => WriteLockAction(x => x.AddColumn(colKey, col));
     public QDataFrame<TRowKey, TColKey, TValue> Compress(Func<TValue, TValue, bool> equals = null) => SelectUpdates((x, y) => x.Value.DictCompare(y.Value, equals)).ToQDataFrame(false);
   }
 }
