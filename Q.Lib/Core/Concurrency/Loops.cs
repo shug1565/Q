@@ -21,7 +21,7 @@ namespace Q.Lib.Core.Concurrency
 
     public static void ForEach<T>(this IEnumerable<T> source, Action<T, int> act, Func<T, int, bool> breakPredicate = null, Func<T, int, bool> continueClause = null)
     {
-      if (source == null) throw new ArgumentNullException("source");
+      if (source == null) return; // throw new ArgumentNullException("source");
       if (act == null) throw new ArgumentNullException("act");
 
       var i = 0;
@@ -43,7 +43,6 @@ namespace Q.Lib.Core.Concurrency
       foreach (var element in source)
         await action(element);
     }
-
     public static Task WhenAll<T>(this IEnumerable<T> source, Action<T> action) => source.WhenAll(x => Task.Run(() => action(x)));
 
     public static Task WhenAll<T>(this IEnumerable<T> source, Func<T, Task> action)
