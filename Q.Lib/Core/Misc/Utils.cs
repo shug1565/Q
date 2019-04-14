@@ -71,6 +71,24 @@ namespace Q.Lib.Core.Misc {
       return true;
     }
     #endregion
+
+    #region Network
+    public static bool CheckForInternetConnection()
+    {
+      try
+      {
+        using (var client = new System.Net.WebClient())
+        using (client.OpenRead("http://clients3.google.com/generate_204"))
+        {
+          return true;
+        }
+      }
+      catch
+      {
+        return false;
+      }
+    }
+    #endregion
   }
   public enum EdgeMode
   {
