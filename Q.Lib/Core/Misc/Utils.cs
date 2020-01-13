@@ -29,7 +29,7 @@ namespace Q.Lib.Core.Misc {
     public static double ToDbl(this decimal x) => Convert.ToDouble(x);
     public static List<T> ToSingleItemList<T>(this T a) => new List<T> { a };
     public static HashSet<T> ToHashSet<T>(this T a) => new HashSet<T>() { a };
-    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> a) => IsNullOrEmpty(a) ? null : new HashSet<T>(a);
+    //public static HashSet<T> ToHashSet<T>(this IEnumerable<T> a) => IsNullOrEmpty(a) ? null : new HashSet<T>(a);
     #endregion
 
     #region KeyValuePair utils

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Q.Lib.Core.Concurrency;
 
@@ -119,6 +120,18 @@ namespace Q.Lib.Core.Linq
     #endregion
 
     #region Array
+    //public static object[,] To2dArray(this IEnumerable<ITuple> a)
+    //{
+    //  var t = a.Select(x =>
+    //  {
+    //    var tret = new List<object>();
+    //    for (int j = 0; j < x.Length; j++)
+    //      tret.Add(x[j]);
+    //    return tret;
+    //  });
+    //  var ret = t.To2dArray();
+    //  return ret;
+    //}
     public static T[,] To2dArray<T>(this IEnumerable<(T, T)> a)
     {
       T[,] ret = new T[a.Count(), 2];
@@ -129,6 +142,12 @@ namespace Q.Lib.Core.Linq
     {
       T[,] ret = new T[a.Count(), 3];
       a.ForEach((x, i) => { ret[i, 0] = x.Item1; ret[i, 1] = x.Item2; ret[i, 2] = x.Item3; });
+      return ret;
+    }
+    public static T[,] To2dArray<T>(this IEnumerable<(T, T, T, T)> a)
+    {
+      T[,] ret = new T[a.Count(), 4];
+      a.ForEach((x, i) => { ret[i, 0] = x.Item1; ret[i, 1] = x.Item2; ret[i, 2] = x.Item3; ret[i, 3] = x.Item4; });
       return ret;
     }
     public static T[,] To2dArray<T>(this IEnumerable<IEnumerable<T>> a)
