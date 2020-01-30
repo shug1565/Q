@@ -44,6 +44,8 @@ namespace Q.Lib.Core.Linq
       }, x => x.Item1);
       return ret.Count == 0 ? null : ret;
     }
+    public static bool IsSubsetOf<T>(this IEnumerable<T> a, IEnumerable<T> b)
+      => a.Intersect(b).Count() == a.Count();
     #endregion
 
     #region ToType

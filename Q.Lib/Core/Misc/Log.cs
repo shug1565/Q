@@ -44,7 +44,7 @@ namespace Q.Lib.Core.Misc
 
       var fileTarget = new FileTarget("target2")
       {
-        FileName = AppDomain.CurrentDomain.BaseDirectory + "log.txt",
+        FileName = AppDomain.CurrentDomain.BaseDirectory + "run.log",
         Layout = "${longdate} ${level} ${message}  ${exception}"
       };
 
