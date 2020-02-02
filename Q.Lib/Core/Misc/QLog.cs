@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 
 namespace Q.Lib.Core.Misc
 {
-  public static class Log
+  public static class QLog
   {
-    public static Logger NLogger { get; private set; }
-    static Log()
+    private static Logger logger = null;
+    private static ManualResetEvent waitHandle = new ManualResetEvent(false);
+    static QLog()
     {
       //#if DEBUG
       //      // Setup the logging view for Sentinel - http://sentinel.codeplex.com
@@ -53,7 +56,25 @@ namespace Q.Lib.Core.Misc
 
       NLog.LogManager.Configuration = config;
 
-      NLogger = LogManager.GetCurrentClassLogger();
+      Task.Run(() => { 
+        logger = LogManager.GetCurrentClassLogger();
+        waitHandle.Set();
+      });
+    }
+    public static Task Info(string msg)
+    {
+      waitHandle.WaitOne();
+      return Task.Run(() => logger.Info(msg));
+    }
+    public static Task Error(string msg)
+    {
+      waitHandle.WaitOne();
+      return Task.Run(() => logger.Error(msg));
+    }
+    public static Task Error(Exception e, string msg)
+    {
+      waitHandle.WaitOne();
+      return Task.Run(() => logger.Error(e, msg));
     }
   }
 }
