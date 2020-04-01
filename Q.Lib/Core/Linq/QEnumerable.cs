@@ -10,6 +10,7 @@ namespace Q.Lib.Core.Linq
   public static class QEnumerable
   {
     #region Misc
+    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> collection) => collection ?? Enumerable.Empty<T>();
     public static bool NotNullOrEmpty<T>(this IEnumerable<T> x) => x != null && x.Count() > 0;
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> x) => x.Where(e => e != null);
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> x) where T : struct => x.Where(e => e != null).Select(e => e.Value);

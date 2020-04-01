@@ -89,6 +89,36 @@ namespace Q.Lib.Core.Misc {
       }
     }
     #endregion
+
+    #region misc
+    public static T ActionFunc<T>(Action a, Func<T> f)
+    {
+      a();
+      return f();
+    }
+    public static Predicate<T> Or<T>(params Predicate<T>[] predicates)
+    {
+      return delegate (T item)
+      {
+        foreach (Predicate<T> predicate in predicates)
+          if (predicate(item)) return true;
+        return false;
+      };
+    }
+    public static Predicate<T> And<T>(params Predicate<T>[] predicates)
+    {
+      return delegate (T item)
+      {
+        foreach (Predicate<T> predicate in predicates)
+          if (!predicate(item)) return false;
+        return true;
+      };
+    }
+    public static void Repeat(this int n, Action a)
+    {
+      for (int i = 0; i < n; i++) a();
+    }
+    #endregion
   }
   public enum EdgeMode
   {
