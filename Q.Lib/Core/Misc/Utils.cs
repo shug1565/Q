@@ -118,9 +118,16 @@ namespace Q.Lib.Core.Misc {
     {
       for (int i = 0; i < n; i++) a();
     }
-    public static bool IsEqual(this double a, double b, double thresh = 1e-8) => Math.Abs(a - b) < thresh;
-    public static bool LessThanOrEqual(this double a, double b, double thresh = 1e-8) => a.IsEqual(b, thresh) || a < b;
-    public static bool GreaterThanOrEqual(this double a, double b, double thresh = 1e-8) => a.IsEqual(b, thresh) || a > b;
+    public static bool IsEqual(this double a, double? b, double thresh = 1e-8) => Math.Abs(a - b.Value) < thresh;
+    public static bool IsEqual(this double? a, double? b, double thresh = 1e-8) => a == null || b == null ? false : Math.Abs(a.Value - b.Value) < thresh;
+    public static bool IsLessThan(this double a, double? b, double thresh = 1e-8) => !a.IsEqual(b, thresh) && a < b;
+    public static bool IsLessThan(this double? a, double? b, double thresh = 1e-8) => !a.IsEqual(b, thresh) && a < b;
+    public static bool IsGreaterThan(this double a, double? b, double thresh = 1e-8) => !a.IsEqual(b, thresh) && a > b;
+    public static bool IsGreaterThan(this double? a, double? b, double thresh = 1e-8) => !a.IsEqual(b, thresh) && a > b;
+    public static bool IsLessThanOrEqual(this double a, double? b, double thresh = 1e-8) => a.IsEqual(b, thresh) || a < b;
+    public static bool IsLessThanOrEqual(this double? a, double? b, double thresh = 1e-8) => a.IsEqual(b, thresh) || a < b;
+    public static bool IsGreaterThanOrEqual(this double a, double? b, double thresh = 1e-8) => a.IsEqual(b, thresh) || a > b;
+    public static bool IsGreaterThanOrEqual(this double? a, double? b, double thresh = 1e-8) => a.IsEqual(b, thresh) || a > b;
     #endregion
   }
   public enum EdgeMode
